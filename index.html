@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Access</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:black;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* LOGIN */
+#login{
+  background:#111;
+  padding:30px;
+  border-radius:10px;
+  text-align:center;
+  color:white;
+}
+#login input{
+  padding:10px;
+  width:200px;
+  margin-top:10px;
+}
+#login button{
+  margin-top:10px;
+  padding:10px;
+  width:100%;
+  background:#25D366;
+  border:none;
+  color:white;
+  font-size:16px;
+}
+
+/* WHATSAPP UI */
+#app{
+  display:none;
+  width:100%;
+  max-width:400px;
+  height:100vh;
+  background:#ece5dd;
+  flex-direction:column;
+}
+#header{
+  background:#075e54;
+  color:white;
+  padding:15px;
+  text-align:center;
+  font-weight:bold;
+}
+#chat{
+  flex:1;
+  padding:10px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+}
+.msg{
+  background:white;
+  padding:10px;
+  border-radius:10px;
+  margin:5px 0;
+  max-width:75%;
+}
+
+/* typing animation */
+.typing{
+  font-size:12px;
+  color:gray;
+  margin:5px;
+  font-style:italic;
+}
+
+/* PROGRESS BAR */
+#progressBar{
+  height:8px;
+  background:#ccc;
+  margin-top:5px;
+}
+#progress{
+  height:100%;
+  width:0%;
+  background:red;
+}
+
+/* FINAL MESSAGE */
+#final{
+  text-align:center;
+  font-size:22px;
+  color:green;
+  padding:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login">
+  <h3>Enter Password 🔒</h3>
+  <input type="password" id="pass" placeholder="Password">
+  <button onclick="start()">Continue</button>
+</div>
+
+<!-- WHATSAPP SIMULATION -->
+<div id="app">
+  <div id="header">WhatsApp</div>
+  <div id="chat"></div>
+  <div id="progressBar"><div id="progress"></div></div>
+  <div id="final"></div>
+</div>
+
+<!-- BACKGROUND MUSIC -->
+<audio id="bgm" loop playsinline>
+  <source src="april.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+let chat = document.getElementById("chat");
+let bgm = document.getElementById("bgm");
+
+// Start background music safely
+function playMusic(){
+  bgm.volume = 0.3; // low start
+  bgm.play().catch(()=>{
+    document.body.addEventListener("click", ()=>bgm.play(), {once:true});
+  });
+}
+
+// Typing animation before showing message
+function typingMessage(text, delay){
+  let typing = document.createElement("div");
+  typing.className="typing";
+  typing.innerText="typing...";
+  chat.appendChild(typing);
+  chat.scrollTop = chat.scrollHeight;
+
+  setTimeout(()=>{
+    typing.remove();
+    msg(text);
+  }, delay);
+}
+
+// Add normal chat message
+function msg(text){
+  let d = document.createElement("div");
+  d.className="msg";
+  d.innerText = text;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// Start prank
+function start(){
+  let p = document.getElementById("pass").value;
+
+  if(p === "7895"){
+    document.getElementById("login").style.display="none";
+    document.getElementById("app").style.display="flex";
+
+    playMusic();
+
+    typingMessage("🔐 Connecting to WhatsApp server...",1000);
+    setTimeout(()=>typingMessage("📡 Syncing data...",1000),1500);
+    setTimeout(()=>typingMessage("📂 Scanning files...",1000),3000);
+    setTimeout(()=>typingMessage("Analyzing device...",1000),4500);
+    setTimeout(()=>typingMessage("⚠ Suspicious activity detected!",1000),6000);
+    setTimeout(()=>typingMessage("🗑 Preparing file deletion...",1000),7500);
+
+    setTimeout(runProgress,9000);
+
+  } else {
+    alert("Wrong password 😈");
+  }
+}
+
+// Fake deletion progress
+function runProgress(){
+  let progress = document.getElementById("progress");
+  let width = 0;
+
+  let steps=[
+    "Deleting photos...",
+    "Deleting videos...",
+    "Deleting contacts...",
+    "Deleting WhatsApp chats...",
+    "Finalizing..."
+  ];
+
+  let stepIndex = 0;
+
+  let interval = setInterval(()=>{
+    width += 2;
+    progress.style.width = width+"%";
+
+    if(width%20===0 && stepIndex < steps.length){
+      typingMessage("⚠ "+steps[stepIndex],800);
+      stepIndex++;
+    }
+
+    if(width>=100){
+      clearInterval(interval);
+      setTimeout(end,1000); // automatic reveal
+    }
+  },100);
+}
+
+// Increase volume smoothly at reveal
+function increaseVolume(){
+  let vol = bgm.volume;
+  let fade = setInterval(()=>{
+    if(vol < 1){
+      vol += 0.05;
+      bgm.volume = vol;
+    } else {
+      clearInterval(fade);
+    }
+  },200);
+}
+
+// Final reveal
+function end(){
+  increaseVolume(); // 🔊 louder music
+  document.getElementById("final").innerHTML = "😂 GOT YOU!<br>APRIL FOOL 😈<br>";
+}
+</script>
+
+</body>
+</html>
